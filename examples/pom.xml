@@ -16,5 +16,6 @@
     <modules>
         <module>spring</module>
         <module>federation</module>
+        <module>federation-auth</module>
     </modules>
 </project>
