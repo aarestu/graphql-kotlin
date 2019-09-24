@@ -20,15 +20,15 @@ import com.expediagroup.graphql.annotations.GraphQLContext
 import com.expediagroup.graphql.sample.accounts.model.User
 import com.expediagroup.graphql.sample.accounts.model.users
 import com.expediagroup.graphql.sample.auth.context.UserGraphQLContext
+import com.expediagroup.graphql.sample.auth.directive.IsAuthenticated
 import com.expediagroup.graphql.spring.operations.Query
 import org.springframework.stereotype.Component
 
 @Component
 class MeQuery : Query {
 
-    //    @IsAuthenticated TODO: Fix this
+    @IsAuthenticated
     fun me(@GraphQLContext context: UserGraphQLContext): User {
-//        return users.get(context.user?.id?.toIntOrNull())!! TODO: Fix this
-        return users[1]!!
+        return users.get(context.user?.id?.toIntOrNull())!!
     }
 }
