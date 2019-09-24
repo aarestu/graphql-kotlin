@@ -13,22 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const {ApolloServer} = require("apollo-server");
+const {ApolloGateway, RemoteGraphQLDataSource} = require("@apollo/gateway");
 
-const { ApolloServer } = require("apollo-server");
-const { ApolloGateway, RemoteGraphQLDataSource } = require("@apollo/gateway");
-
-const server = new ApolloServer({
-  gateway: new ApolloGateway({
-    debug: true,
+const gateway = new ApolloGateway({
     serviceList: [
-            { name: "accounts", url: "http://localhost:8080/graphql" },
-            { name: "products", url: "http://localhost:8081/graphql" },
-            { name: "reviews", url: "http://localhost:8083/graphql" },
-    ]
-  }),
-  subscriptions: false
+        {name: "accounts", url: "http://localhost:8080/graphql"},
+        {name: "products", url: "http://localhost:8081/graphql"},
+        {name: "reviews", url: "http://localhost:8082/graphql"},
+    ],
+    buildService({name, url}) {
+        return new RemoteGraphQLDataSource({
+            url,
+            willSendRequest({request, context}) {
+                // pass the user's token from the context to underlying services
+                if (context.token) {
+                    request.http.headers.set('authorization', context.token);
+                }
+            },
+        });
+    }
 });
 
-server.listen().then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
-});
+(async () => {
+    const {schema, executor} = await gateway.load();
+
+    const server = new ApolloServer({
+        schema,
+        executor,
+        context: async ({req}) => {
+            // get the user token from the headers
+            const token = req.headers.authorization || null;
+
+            // add the token to the context
+            return {token};
+        },
+    });
+
+    server.listen().then(({url}) => {
+        console.log(`🚀 Server ready at ${url}`);
+    });
+})();
