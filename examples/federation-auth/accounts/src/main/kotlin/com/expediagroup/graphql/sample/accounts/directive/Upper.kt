@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.expediagroup.graphql.sample.auth.directive
+package com.expediagroup.graphql.sample.accounts.directive
 
 import com.expediagroup.graphql.annotations.GraphQLDirective
+import graphql.introspection.Introspection.DirectiveLocation.FIELD_DEFINITION
 
-
-@GraphQLDirective(description = "Is Authenticated?")
-annotation class IsAuthenticated
+@GraphQLDirective(locations = [
+    FIELD_DEFINITION
+])
+annotation class Upper

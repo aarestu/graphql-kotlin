@@ -18,18 +18,18 @@ package com.expediagroup.graphql.sample.reviews.directive
 import com.expediagroup.graphql.directives.KotlinDirectiveWiringFactory
 import com.expediagroup.graphql.directives.KotlinSchemaDirectiveEnvironment
 import com.expediagroup.graphql.directives.KotlinSchemaDirectiveWiring
-import com.expediagroup.graphql.sample.auth.directive.AuthorisationSchemaDirectiveWiring
-import com.expediagroup.graphql.sample.auth.directive.IsAuthenticated
+import com.expediagroup.graphql.sample.auth.directive.AuthSchemaDirectiveWiring
+import com.expediagroup.graphql.sample.auth.directive.Auth
 import com.google.common.base.CaseFormat
 import graphql.schema.GraphQLDirectiveContainer
 import kotlin.reflect.KClass
 
 class CustomDirectiveWiringFactory : KotlinDirectiveWiringFactory() {
 
-    private val authorisationSchemaDirectiveWiring = AuthorisationSchemaDirectiveWiring()
+    private val authSchemaDirectiveWiring = AuthSchemaDirectiveWiring()
 
     override fun getSchemaDirectiveWiring(environment: KotlinSchemaDirectiveEnvironment<GraphQLDirectiveContainer>): KotlinSchemaDirectiveWiring? = when {
-        environment.directive.name == getDirectiveName(IsAuthenticated::class) -> authorisationSchemaDirectiveWiring
+        environment.directive.name == getDirectiveName(Auth::class) -> authSchemaDirectiveWiring
         else -> null
     }
 }

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package com.expediagroup.graphql.sample.accounts.query
+package com.expediagroup.graphql.sample.auth.directive
 
-import com.expediagroup.graphql.sample.accounts.directive.Upper
-import com.expediagroup.graphql.spring.operations.Query
-import org.springframework.stereotype.Component
+import com.expediagroup.graphql.annotations.GraphQLDirective
+import graphql.introspection.Introspection.DirectiveLocation.FIELD_DEFINITION
 
-@Component
-class HelloQuery : Query {
-
-    @Upper
-    fun helloAccountService(): String = "Hello from account service!!"
-}
+@GraphQLDirective(description = "Is Authenticated?", locations = [
+    FIELD_DEFINITION
+])
+annotation class Auth(val roles:String = "all")

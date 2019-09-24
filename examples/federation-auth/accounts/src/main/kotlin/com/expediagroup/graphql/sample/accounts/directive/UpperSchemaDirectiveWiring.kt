@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-package com.expediagroup.graphql.sample.auth.directive
+package com.expediagroup.graphql.sample.accounts.directive
 
 import com.expediagroup.graphql.directives.KotlinFieldDirectiveEnvironment
 import com.expediagroup.graphql.directives.KotlinSchemaDirectiveWiring
-import com.expediagroup.graphql.sample.auth.context.UserGraphQLContext
-import com.expediagroup.graphql.sample.auth.exceptions.UnauthorizedException
 import graphql.schema.DataFetcher
+import graphql.schema.DataFetcherFactories
+import graphql.schema.DataFetchingEnvironment
 import graphql.schema.GraphQLFieldDefinition
+import java.util.function.BiFunction
 
-class AuthorisationSchemaDirectiveWiring : KotlinSchemaDirectiveWiring {
+
+class UpperSchemaDirectiveWiring: KotlinSchemaDirectiveWiring {
     override fun onField(environment: KotlinFieldDirectiveEnvironment): GraphQLFieldDefinition {
+
         val field = environment.element
         val originalDataFetcher: DataFetcher<Any> = environment.getDataFetcher()
 
-        val authorisationFetcherFetcher = DataFetcher<Any> { dataEnv ->
-
-            dataEnv.getContext<UserGraphQLContext>().user ?: throw UnauthorizedException()
-
-            originalDataFetcher.get(dataEnv)
-        }
-        environment.setDataFetcher(authorisationFetcherFetcher)
+        val lowerCaseFetcher = DataFetcherFactories.wrapDataFetcher(
+            originalDataFetcher,
+            BiFunction<DataFetchingEnvironment, Any, Any>{ _, value -> value.toString().toUpperCase() }
+        )
+        environment.setDataFetcher(lowerCaseFetcher)
         return field
     }
 }
